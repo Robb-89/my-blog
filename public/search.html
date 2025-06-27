@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search Blog Posts</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    nav {
+      background-color: #333;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 1rem;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .post {
+      border-bottom: 1px solid #eee;
+      padding: 1rem 0;
+    }
+
+    .post:last-child {
+      border-bottom: none;
+    }
+
+    .post h2 {
+      margin: 0 0 0.5rem;
+    }
+
+    .post a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .post a:hover {
+      text-decoration: underline;
+    }
+
+    .meta {
+      font-size: 0.9rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="homepage.html">Home</a>
+    <a href="blog.html">Blog</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="create-post.html">New Post</a>
+  </nav>
+
+  <div class="container">
+    <h1>Search Results</h1>
+    <div id="postList">Loading...</div>
+  </div>
+
+  <script>
+    async function fetchAndFilterPosts() {
+      const params = new URLSearchParams(window.location.search);
+      const author = params.get('author');
+      const tag = params.get('tag');
+      const postList = document.getElementById('postList');
+
+      try {
+        const res = await fetch('/posts');
+        const allPosts = await res.json();
+        const filtered = allPosts.filter(post => {
+          const matchAuthor = author ? post.author === author : true;
+          const matchTag = tag ? (post.tags || []).includes(tag) : true;
+          return post.public && matchAuthor && matchTag;
+        });
+
+        postList.innerHTML = '';
+
+        if (!filtered.length) {
+          postList.innerHTML = `<p>No posts found for ${author ? `author: ${author}` : ''}${tag ? ` tag: ${tag}` : ''}.</p>`;
+          return;
+        }
+
+        filtered.reverse().forEach(post => {
+          const div = document.createElement('div');
+          div.className = 'post';
+          div.innerHTML = `
+            <h2><a href="view-post.html?id=${post.id}">${post.title}</a></h2>
+            <p class="meta">By ${post.author} — ${new Date(post.createdAt).toLocaleDateString()}</p>
+          `;
+          postList.appendChild(div);
+        });
+      } catch (err) {
+        postList.innerHTML = '<p>Error loading posts.</p>';
+      }
+    }
+
+    fetchAndFilterPosts();
+  </script>
+</body>
+</html>

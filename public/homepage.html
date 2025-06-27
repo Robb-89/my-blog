@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Robert Moreno | Blog</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fafafa;
+      color: #222;
+    }
+
+    nav {
+      background-color: #111;
+      padding: 1rem 2rem;
+      text-align: center;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 1.5rem;
+      font-weight: 500;
+    }
+
+    .hero {
+      padding: 4rem 2rem;
+      text-align: center;
+      background: #f2f2f2;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: #666;
+    }
+
+    .content {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .post {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+
+    .post h2 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    .post p {
+      color: #555;
+    }
+
+    .post a {
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+    }
+
+    .post a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #999;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="homepage.html">Home</a>
+    <a href="blog.html">All Posts</a>
+    <a href="projects.html">Projects</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>Welcome to My Blog</h1>
+    <p>I'm Robert — writing about hacking, tech, and everything I learn along the way.</p>
+  </section>
+
+  <!-- Blog Previews -->
+  <div class="content" id="postPreviews">
+    <p>Loading recent posts...</p>
+  </div>
+
+  <footer>
+    &copy; 2025 Robert Moreno. All rights reserved.
+  </footer>
+
+  <script>
+    async function loadHomepagePosts() {
+      const res = await fetch('/posts/public');
+      const posts = await res.json();
+      const container = document.getElementById('postPreviews');
+      container.innerHTML = '';
+
+      if (!posts.length) {
+        container.innerHTML = '<p>No posts available.</p>';
+        return;
+      }
+
+      posts.reverse().slice(0, 2).forEach(post => {
+        const div = document.createElement('div');
+        div.className = 'post';
+        div.innerHTML = `
+          <h2><a href="#">${post.title}</a></h2>
+          <p>${post.content.substring(0, 160)}...</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    loadHomepagePosts();
+  </script>
+</body>
+</html>
