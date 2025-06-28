@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    nav {
+      background-color: #333;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 1rem;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .post {
+      border-bottom: 1px solid #eee;
+      padding: 1rem 0;
+    }
+
+    .post:last-child {
+      border-bottom: none;
+    }
+
+    .post h2 {
+      margin: 0 0 0.5rem;
+    }
+
+    .post button {
+      margin-right: 0.5rem;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .post button.edit {
+      background-color: #007bff;
+    }
+
+    .post button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="homepage.html">Home</a>
+    <a href="blog.html">Blog</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="create-post.html">New Post</a>
+    <a href="login.html">Logout</a>
+  </nav>
+
+  <div class="container">
+    <h1>Your Posts</h1>
+    <div id="postList">Loading...</div>
+  </div>
+
+  <script>
+    async function loadDashboard() {
+      const res = await fetch('/posts/mine');
+      const posts = await res.json();
+      const list = document.getElementById('postList');
+      list.innerHTML = '';
+
+      if (!posts.length) {
+        list.innerHTML = '<p>You haven’t posted anything yet.</p>';
+        return;
+      }
+
+      posts.reverse().forEach(post => {
+        const div = document.createElement('div');
+        div.className = 'post';
+        div.innerHTML = `
+          <h2>${post.title}</h2>
+          <p>${new Date(post.createdAt).toLocaleDateString()}</p>
+          <button onclick="deletePost('${post.id}')">Delete</button>
+          <button class="edit" onclick="editPost('${post.id}')">Edit</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function deletePost(id) {
+      if (!confirm('Delete this post?')) return;
+      const res = await fetch(`/posts/${id}`, { method: 'DELETE' });
+      if (res.ok) loadDashboard();
+      else alert('Error deleting post');
+    }
+
+    function editPost(id) {
+      window.location.href = `edit-post.html?id=${id}`;
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
