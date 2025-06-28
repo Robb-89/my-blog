@@ -127,3 +127,7 @@ app.put('/posts/:id', authMiddleware, (req, res) => {
   savePosts(posts);
   res.json({ message: 'Post updated' });
 });
+
+app.get('/', (req, res) => {
+  res.redirect('/homepage.html');
+});
