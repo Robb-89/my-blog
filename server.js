@@ -17,6 +17,15 @@ app.use(session({
   saveUninitialized: true
 }));
 
+// Simple auth middleware
+function authMiddleware(req, res, next) {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Not logged in' });
+  }
+  req.user = { id: req.session.user }; // Attach user info
+  next();
+}
+
 const USERS_FILE = './users.json';
 const POSTS_FILE = './posts.json';
 
