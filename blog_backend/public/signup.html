@@ -31,7 +31,7 @@
       width: 100%;
       padding: 0.75rem;
       margin-top: 1rem;
-      background-color: #28a745;
+      background-color: #007bff;
       color: white;
       border: none;
       border-radius: 6px;
@@ -39,7 +39,7 @@
       cursor: pointer;
     }
     button:hover {
-      background-color: #218838;
+      background-color: #0056b3;
     }
     .error {
       color: red;
@@ -49,22 +49,32 @@
       color: green;
       margin-top: 1rem;
     }
+    nav {
+      background-color: #333;
+      padding: 1rem;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 1rem;
+    }
   </style>
 </head>
 <body>
-  <nav style="background-color: #333; color: white; padding: 1rem; text-align: center;">
-    <a href="homepage.html" style="color: white; text-decoration: none; margin: 0 1rem;">Home</a>
-    <a href="blog.html" style="color: white; text-decoration: none; margin: 0 1rem;">Blog</a>
-    <a href="login.html" style="color: white; text-decoration: none; margin: 0 1rem;">Login</a>
-    <a href="signup.html" style="color: white; text-decoration: none; margin: 0 1rem;">Sign Up</a>
+  <nav>
+    <a href="homepage.html">Home</a>
+    <a href="blog.html">Blog</a>
+    <a href="login.html">Login</a>
+    <a href="signup.html">Sign Up</a>
   </nav>
 
   <div class="container">
-    <h1>Sign Up</h1>
+    <h1>Create an Account</h1>
     <form id="signupForm">
       <input type="text" id="username" placeholder="Username" required />
       <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">Create Account</button>
+      <button type="submit">Sign Up</button>
       <div class="error" id="errorMsg"></div>
       <div class="success" id="successMsg"></div>
     </form>
@@ -80,14 +90,20 @@
       errorMsg.textContent = '';
       successMsg.textContent = '';
 
-      const username = document.getElementById('username').value;
+      const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
 
+      if (!username || !password) {
+        errorMsg.textContent = 'Please fill in both fields.';
+        return;
+      }
+
       try {
-        const res = await fetch('/signup', {
+        const res = await fetch('/api/auth/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
+          body: JSON.stringify({ username, password }),
+          credentials: 'include'
         });
 
         const data = await res.json();
@@ -98,10 +114,9 @@
           errorMsg.textContent = data.error || 'Signup failed';
         }
       } catch (err) {
-        errorMsg.textContent = 'Server error';
+        errorMsg.textContent = 'Server error. Please try again later.';
       }
     });
   </script>
 </body>
 </html>
-
